@@ -11,7 +11,7 @@ transcripts — a turnstile.
 > **The agent proposes. The automaton disposes.**
 
 This is the working implementation of the essay
-[*Stop Begging Your Agent to Behave*](./stop-begging-your-agent-to-behave.md)
+[*Stop Begging Your Agent to Behave*](https://medium.com/@psaghelyi/stop-begging-your-agent-to-behave-b3664280c464)
 (hooks, traces, and a little temporal logic: real guardrails for agentic workflows).
 
 ![run view — the seatbelt denying a refund under prompt pressure](docs/dashboard-run.png)
