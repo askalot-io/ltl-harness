@@ -14,7 +14,7 @@ This is the working implementation of the essay
 [*Stop Begging Your Agent to Behave*](./stop-begging-your-agent-to-behave.md)
 (hooks, traces, and a little temporal logic: real guardrails for agentic workflows).
 
-![run view — the seatbelt denying a refund under prompt pressure](docs/dashboard-py-nginx.png)
+![run view — the seatbelt denying a refund under prompt pressure](docs/dashboard-run.png)
 
 ## How it works
 
@@ -139,7 +139,7 @@ sides only talk via files and subprocesses, mirroring the design-time/runtime sp
 
 ## The dashboard
 
-![rulebook view — every rule is a little machine](docs/dashboard-py-rulebook.png)
+![rulebook view — every rule is a little machine](docs/dashboard-rulebook.png)
 
 - **Rule status over the trace** — rules × events matrix in the four colors; ⛔ columns
   mark calls the seatbelt denied (events that never happened). Click to time-travel.
