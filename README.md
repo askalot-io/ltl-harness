@@ -219,8 +219,8 @@ docs/             screenshots
 
 ## References
 
-- De Giacomo & Vardi, *LTL and LDL on Finite Traces* (IJCAI 2013) — LTLf semantics
-- Pesic, Schonenberg & van der Aalst, *DECLARE* (EDOC 2007) — the template catalog
-- Maggi, Montali, Westergaard & van der Aalst (BPM 2011) — monitoring with colored automata
-- Fuggitti & Chakraborti, *NL2LTL* (AAAI 2023) — NL → DECLARE translation
+- De Giacomo & Vardi, [*Linear Temporal Logic and Linear Dynamic Logic on Finite Traces*](https://www.ijcai.org/Proceedings/13/Papers/132.pdf) (IJCAI 2013) — LTLf semantics
+- Pesic, Schonenberg & van der Aalst, [*DECLARE: Full Support for Loosely-Structured Processes*](https://doi.org/10.1109/EDOC.2007.14) (EDOC 2007) — the template catalog
+- Maggi, Montali, Westergaard & van der Aalst, [*Monitoring Business Constraints with Linear Temporal Logic: An Approach Based on Colored Automata*](https://doi.org/10.1007/978-3-642-23059-2_13) (BPM 2011) — the four-color runtime monitoring
+- Fuggitti & Chakraborti, [*NL2LTL — a Python Package for Converting Natural Language Instructions to LTL Formulas*](https://ojs.aaai.org/index.php/AAAI/article/view/27068) (AAAI 2023) — [github.com/IBM/nl2ltl](https://github.com/IBM/nl2ltl)
 - [LTLf2DFA](https://github.com/whitemech/LTLf2DFA) / [MONA](https://www.brics.dk/mona/) — the formula→DFA toolchain
