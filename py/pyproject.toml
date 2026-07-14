@@ -3,6 +3,7 @@ name = "ltl-harness"
 version = "0.2.0"
 description = "Temporal-logic guardrails for Claude Agent SDK agents — LTLf2DFA-compiled colored automata enforced via hooks."
 requires-python = ">=3.10"
+license = { text = "MIT" }
 dependencies = [
     "claude-agent-sdk",
     "ltlf2dfa",        # + lark-parser 0.12 (incompatible with modern lark, see README)
