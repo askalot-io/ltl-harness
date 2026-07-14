@@ -1,0 +1,24 @@
+[project]
+name = "ltl-harness"
+version = "0.2.0"
+description = "Temporal-logic guardrails for Claude Agent SDK agents — LTLf2DFA-compiled colored automata enforced via hooks."
+requires-python = ">=3.10"
+dependencies = [
+    "claude-agent-sdk",
+    "ltlf2dfa",        # + lark-parser 0.12 (incompatible with modern lark, see README)
+    "lark-parser==0.12.0",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+# nl2ltl lives in its own venv (.venv-nl): its pylogics dependency requires
+# lark >= 1.x, which collides with ltlf2dfa's lark-parser 0.x on the same
+# `lark` module path.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

@@ -1,0 +1,72 @@
+# Rulebook for the refund agent — the running example from
+# "Stop Begging Your Agent to Behave".
+#
+# activities: the world-to-symbols mapping. Deliberately dumb: tool name
+# equality, optionally one field of the tool result. Audit it like the
+# security boundary it is.
+
+name: refund-agent-rulebook
+version: 3
+
+activities:
+  look_up_order:
+    tool: mcp__refund__look_up_order
+  request_receipt:
+    tool: mcp__refund__request_receipt
+  verify_receipt_ok:
+    tool: mcp__refund__verify_receipt
+    result: { path: verified, equals: true }
+  verify_receipt_failed:
+    tool: mcp__refund__verify_receipt
+    result: { path: verified, equals: false }
+  issue_refund:
+    tool: mcp__refund__issue_refund
+  write_audit_note:
+    tool: mcp__refund__write_audit_note
+  escalate_to_human:
+    tool: mcp__refund__escalate_to_human
+  reject_request:
+    tool: mcp__refund__reject_request
+
+# postures: recorder (log only) -> tripwire (alert) -> seatbelt (deny)
+rules:
+  - id: no-refund-before-verification
+    description: Never issue a refund before the receipt has been verified.
+    template: Precedence
+    params: { a: verify_receipt_ok, b: issue_refund }
+    posture: seatbelt
+
+  - id: audit-note-follows-refund
+    description: Every refund must be immediately followed by an audit note.
+    template: ChainResponse
+    params: { a: issue_refund, b: write_audit_note }
+    posture: seatbelt
+
+  - id: at-most-3-receipt-requests
+    description: Ask the customer for the receipt at most three times, then hand the case to a human.
+    template: Absence
+    params: { a: request_receipt, n: 3 }
+    posture: seatbelt
+
+  - id: no-payment-after-escalation
+    description: Once a case has been escalated, never touch the payment system again.
+    template: NotSuccession
+    params: { a: escalate_to_human, b: issue_refund }
+    posture: seatbelt
+
+  - id: decision-eventually
+    description: Every request must end in a decision — a refund, a rejection, or an escalation — never in silence.
+    template: Existence
+    params: { a: [issue_refund, reject_request, escalate_to_human] }
+    posture: seatbelt
+
+  - id: look-up-order-first
+    description: The first action on a case is to look up the order.
+    template: Init
+    params: { a: look_up_order }
+    posture: tripwire
+
+  - id: order-lookup-happens
+    description: Every run must look up an order at least once.
+    formula: "F(look_up_order)"
+    posture: recorder

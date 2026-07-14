@@ -1,0 +1,14 @@
+[Unit]
+Description=LTL Guardrail Harness dashboard (Python engine)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/Project/LTL-harness/py
+Environment=PORT=8471
+ExecStart=/Project/LTL-harness/py/.venv/bin/python -m ltl_harness.server
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

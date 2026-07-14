@@ -1,0 +1,20 @@
+# secrets — never commit; see .env.example
+.env
+
+# flight records (runtime artifacts, may contain conversation content)
+runs/*.jsonl
+
+# python
+py/.venv/
+py/.venv-nl/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# tooling / editor state
+.memsearch/
+.playwright-mcp/
+nohup.out
+
+# build artifacts
+*.egg-info/

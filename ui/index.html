@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LTL Guardrail Harness</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛩️</text></svg>" />
+</head>
+<body>
+  <header id="topbar">
+    <div class="brand">
+      <span class="brand-mark">⛩</span>
+      <span class="brand-name">LTL Guardrail Harness</span>
+      <span class="brand-sub">the agent proposes · the automaton disposes</span>
+    </div>
+    <div id="rulebook-pill" class="pill">rulebook: …</div>
+  </header>
+
+  <div id="layout">
+    <nav id="sidebar">
+      <div class="nav-tabs">
+        <button id="tab-runs" class="tab active">Runs</button>
+        <button id="tab-rulebook" class="tab">Rulebook</button>
+      </div>
+      <div id="run-list"></div>
+    </nav>
+    <main id="main"></main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
