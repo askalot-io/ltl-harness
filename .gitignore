@@ -6,6 +6,8 @@ runs/*.jsonl
 
 # python
 py/.venv/
+# pre-single-venv layout; kept so old clones stay clean
+py/.venv-nl/
 __pycache__/
 *.pyc
 .pytest_cache/

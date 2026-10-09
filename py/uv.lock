@@ -353,7 +353,7 @@ wheels = [
 [[package]]
 name = "ltl-harness"
 version = "0.2.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "claude-agent-sdk" },
     { name = "ltlf2dfa" },
@@ -372,7 +372,7 @@ nl = [
 requires-dist = [
     { name = "claude-agent-sdk" },
     { name = "ltlf2dfa", specifier = ">=2.0.0" },
-    { name = "nl2ltl", marker = "extra == 'nl'" },
+    { name = "nl2ltl", marker = "extra == 'nl'", specifier = ">=0.0.6" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pyyaml" },
 ]

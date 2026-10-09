@@ -47,13 +47,13 @@ Each rule carries a **posture**, promoted like a release pipeline as confidence 
 
 ## Quick start
 
-Prerequisites: Python ≥ 3.11, [uv](https://docs.astral.sh/uv/) (or pip), and MONA
+Prerequisites: [uv](https://docs.astral.sh/uv/) (it fetches Python 3.14; any Python ≥ 3.11 works), and MONA
 (`apt install mona` — Debian/Ubuntu; the compiler behind LTLf2DFA).
 
 ```bash
 cp .env.example .env                       # add your Claude Code OAuth token
 cd py
-uv sync --all-extras                       # installs Python 3.14 (.python-version) + locked deps into .venv
+uv sync --extra dev                        # installs Python 3.14 (.python-version) + locked deps into .venv
 
 .venv/bin/python -m pytest tests/                              # engine tests
 .venv/bin/python -m ltl_harness.lint_cli ../rules/refund.rules.yaml   # verify the rulebook
@@ -119,7 +119,7 @@ The essay's role reversal: the LLM translates policy *at design time*, where a h
 reviews the output once; deterministic code does the checking at runtime.
 
 ```bash
-cd py                                      # nl2ltl comes with the `nl` extra (uv sync --all-extras)
+cd py && uv sync --all-extras              # adds nl2ltl (the `nl` extra) to the same .venv
 .venv/bin/python -m ltl_harness.nl2rules \
   "Every refund must eventually be audited." --id audit-eventually --posture recorder
 ```
