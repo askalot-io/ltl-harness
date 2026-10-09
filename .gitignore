@@ -6,7 +6,6 @@ runs/*.jsonl
 
 # python
 py/.venv/
-py/.venv-nl/
 __pycache__/
 *.pyc
 .pytest_cache/

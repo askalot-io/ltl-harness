@@ -47,13 +47,13 @@ Each rule carries a **posture**, promoted like a release pipeline as confidence 
 
 ## Quick start
 
-Prerequisites: Python ≥ 3.10, [uv](https://docs.astral.sh/uv/) (or pip), and MONA
+Prerequisites: Python ≥ 3.11, [uv](https://docs.astral.sh/uv/) (or pip), and MONA
 (`apt install mona` — Debian/Ubuntu; the compiler behind LTLf2DFA).
 
 ```bash
 cp .env.example .env                       # add your Claude Code OAuth token
 cd py
-uv venv && uv pip install -e . pytest
+uv sync --all-extras                       # installs Python 3.14 (.python-version) + locked deps into .venv
 
 .venv/bin/python -m pytest tests/                              # engine tests
 .venv/bin/python -m ltl_harness.lint_cli ../rules/refund.rules.yaml   # verify the rulebook
@@ -119,9 +119,8 @@ The essay's role reversal: the LLM translates policy *at design time*, where a h
 reviews the output once; deterministic code does the checking at runtime.
 
 ```bash
-cd py && uv venv .venv-nl && uv pip install --python .venv-nl/bin/python nl2ltl claude-agent-sdk pyyaml
-
-.venv-nl/bin/python -m ltl_harness.nl2rules \
+cd py                                      # nl2ltl comes with the `nl` extra (uv sync --all-extras)
+.venv/bin/python -m ltl_harness.nl2rules \
   "Every refund must eventually be audited." --id audit-eventually --posture recorder
 ```
 
@@ -132,10 +131,10 @@ the same thing, the original wins and a human looks closer); on approval the rul
 appended and the runtime linter re-verifies the whole rulebook, reverting the append
 if verification fails. Guardrails on the guardrails.
 
-Why the second venv: `ltlf2dfa` needs legacy `lark-parser` 0.x while `nl2ltl`'s
-`pylogics` needs `lark` ≥ 1.0 — both claim the same module path
-([whitemech/LTLf2DFA#78](https://github.com/whitemech/LTLf2DFA/issues/78)). The two
-sides only talk via files and subprocesses, mirroring the design-time/runtime split.
+`nl2ltl` is an optional extra: the runtime never imports it. The two sides only talk
+via files and subprocesses, mirroring the design-time/runtime split. (They used to need
+separate venvs; `ltlf2dfa` 2.0 moved to modern `lark` and removed the conflict —
+[whitemech/LTLf2DFA#78](https://github.com/whitemech/LTLf2DFA/issues/78).)
 
 ## The dashboard
 
@@ -199,7 +198,7 @@ py/ltl_harness/   the harness
   agent.py          demo refund agent (mock MCP tools, three scenarios)
   server.py         dashboard server (stdlib)
   lint_cli.py       CI entry point — exit 1 on contradiction/trap
-  nl2rules.py       NL → DECLARE → LTLf translator (runs in .venv-nl)
+  nl2rules.py       NL → DECLARE → LTLf translator (needs the `nl` extra)
 py/tests/         engine test suite
 ui/               the dashboard (plain HTML/JS, no build)
 runs/             flight records (gitignored)

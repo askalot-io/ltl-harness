@@ -1,11 +1,9 @@
 """Design time: natural language -> DECLARE pattern -> LTLf rule, with the
 round-trip check that keeps the translation honest.
 
-Runs in the SEPARATE .venv-nl environment (nl2ltl's pylogics needs modern
-lark; the runtime engine's ltlf2dfa needs lark-parser 0.x — they cannot share
-a venv):
+Needs the `nl` extra (nl2ltl), which the runtime engine never imports:
 
-    .venv-nl/bin/python -m ltl_harness.nl2rules "Every refund must eventually be audited." \
+    .venv/bin/python -m ltl_harness.nl2rules "Every refund must eventually be audited." \
         --id audit-eventually --posture recorder [--yes] [--dry-run]
 
 Pipeline (the role reversal from the article):
