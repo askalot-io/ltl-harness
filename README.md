@@ -1,4 +1,4 @@
-# LTL Guardrail Harness
+# <img src="https://raw.githubusercontent.com/askalot-io/ltl-harness/main/docs/logo.png" alt="" width="40" align="top"> LTL Guardrail Harness
 
 **Temporal-logic guardrails for [Claude Agent SDK](https://code.claude.com/docs/en/agent-sdk) agents.**
 Rules like *"never issue a refund before the receipt has been verified"* live in a versioned
@@ -14,7 +14,7 @@ This is the working implementation of the essay
 [*Stop Begging Your Agent to Behave*](https://medium.com/@psaghelyi/stop-begging-your-agent-to-behave-b3664280c464)
 (hooks, traces, and a little temporal logic: real guardrails for agentic workflows).
 
-![run view — the seatbelt denying a refund under prompt pressure](docs/dashboard-run.png)
+![run view — the seatbelt denying a refund under prompt pressure](https://raw.githubusercontent.com/askalot-io/ltl-harness/main/docs/dashboard-run.png)
 
 ## How it works
 
@@ -45,7 +45,20 @@ After every event each rule wears one of four colors:
 Each rule carries a **posture**, promoted like a release pipeline as confidence grows:
 `recorder` (log only) → `tripwire` (alert on red) → `seatbelt` (deny / block).
 
-## Quick start
+## Install
+
+```bash
+pip install ltl-harness        # Python ≥ 3.11; also needs MONA: `apt install mona`
+```
+
+That gives you the engine, the SDK hooks and four commands: `ltl-harness-lint`,
+`ltl-harness-server`, `ltl-harness-demo` and `ltl-harness-nl2rules`. Installed this way,
+flight records go to `./runs`, a `.env` is read from the current directory if there is
+one, and the rulebook defaults to the bundled refund example — point
+`LTL_HARNESS_RULEBOOK` (and `LTL_HARNESS_RUNS`) at your own. The `nl` extra installs
+with uv only: `nl2ltl` declares `Python <3.11`, which pip enforces and uv does not.
+
+## Quick start (from a checkout)
 
 Prerequisites: [uv](https://docs.astral.sh/uv/) (it fetches Python 3.14; any Python ≥ 3.11 works), and MONA
 (`apt install mona` — Debian/Ubuntu; the compiler behind LTLf2DFA).
@@ -138,7 +151,7 @@ separate venvs; `ltlf2dfa` 2.0 moved to modern `lark` and removed the conflict �
 
 ## The dashboard
 
-![rulebook view — every rule is a little machine](docs/dashboard-rulebook.png)
+![rulebook view — every rule is a little machine](https://raw.githubusercontent.com/askalot-io/ltl-harness/main/docs/dashboard-rulebook.png)
 
 - **Rule status over the trace** — rules × events matrix in the four colors; ⛔ columns
   mark calls the seatbelt denied (events that never happened). Click to time-travel.
@@ -199,8 +212,9 @@ py/ltl_harness/   the harness
   server.py         dashboard server (stdlib)
   lint_cli.py       CI entry point — exit 1 on contradiction/trap
   nl2rules.py       NL → DECLARE → LTLf translator (needs the `nl` extra)
+  paths.py          where rules/, runs/ and .env are found (checkout vs installed)
+  ui/               the dashboard (plain HTML/JS, no build)
 py/tests/         engine test suite
-ui/               the dashboard (plain HTML/JS, no build)
 runs/             flight records (gitignored)
 deploy/           systemd + nginx reference configs
 docs/             screenshots

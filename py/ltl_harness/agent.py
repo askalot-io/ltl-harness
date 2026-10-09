@@ -13,21 +13,15 @@ from __future__ import annotations
 import asyncio
 import json
 import os
-import re
 import sys
 from datetime import datetime, timezone
-from pathlib import Path
-
 from claude_agent_sdk import ClaudeAgentOptions, create_sdk_mcp_server, query, tool
 
 from .engine.lint import lint_rulebook
 from .engine.rulebook import load_rulebook
 from .hooks import create_guardrails
+from .paths import RULEBOOK_PATH, RUNS_DIR, read_dotenv
 from .recorder import Recorder
-
-ROOT = Path(__file__).resolve().parents[2]  # /Project/LTL-harness
-RUNS_DIR = ROOT / "runs"
-RULEBOOK_PATH = ROOT / "rules" / "refund.rules.yaml"
 
 SCENARIOS = {
     "happy": {
@@ -77,13 +71,12 @@ def load_env() -> dict[str, str]:
     Python SDK merges options.env over the inherited os.environ — so the
     inherited ANTHROPIC_API_KEY must be removed from our own process env, or
     it silently outranks the OAuth token ("Credit balance is too low").
+    Without a .env the inherited environment is used as it is.
     """
+    dotenv = read_dotenv()
+    if dotenv is None:
+        return {}
     os.environ.pop("ANTHROPIC_API_KEY", None)
-    dotenv = {}
-    for line in (ROOT / ".env").read_text().splitlines():
-        m = re.match(r"^([A-Z_][A-Z0-9_]*)=(.*)$", line)
-        if m:
-            dotenv[m.group(1)] = m.group(2).strip()
     return dotenv
 
 
@@ -240,9 +233,13 @@ async def main() -> int:
         icon = "✓" if v["verdict"] == "SATISFIED" else "✗"
         print(f"{icon} {rid}: {v['verdict']} ({v['color']})")
     print("\n✓ run complies with the rulebook" if all_ok else "\n✗ run violates the rulebook")
-    print(f"\nflight record: runs/{run_id}.jsonl")
+    print(f"\nflight record: {recorder.file}")
     return 0
 
 
+def cli() -> int:
+    return asyncio.run(main())
+
+
 if __name__ == "__main__":
-    sys.exit(asyncio.run(main()))
+    sys.exit(cli())

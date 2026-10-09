@@ -2,8 +2,23 @@
 name = "ltl-harness"
 version = "0.2.0"
 description = "Temporal-logic guardrails for Claude Agent SDK agents — LTLf2DFA-compiled colored automata enforced via hooks."
+readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Peter Saghelyi" }]
+keywords = ["ltl", "ltlf", "guardrails", "agents", "claude", "runtime-verification", "declare"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Quality Assurance",
+]
 dependencies = [
     "claude-agent-sdk",
     "ltlf2dfa>=2.0.0", # 2.x moved to modern lark, so it shares a venv with nl2ltl
@@ -14,12 +29,26 @@ dependencies = [
 dev = ["pytest"]
 nl = ["nl2ltl>=0.0.6"] # design-time NL -> LTLf translator (ltl_harness.nl2rules)
 
+[project.urls]
+Homepage = "https://github.com/askalot-io/ltl-harness"
+Repository = "https://github.com/askalot-io/ltl-harness"
+Issues = "https://github.com/askalot-io/ltl-harness/issues"
+
+[project.scripts]
+ltl-harness-lint = "ltl_harness.lint_cli:main"
+ltl-harness-server = "ltl_harness.server:main"
+ltl-harness-demo = "ltl_harness.agent:cli"
+ltl-harness-nl2rules = "ltl_harness.nl2rules:main"
+
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["ltl_harness", "ltl_harness.engine"]
+
+[tool.setuptools.package-data]
+ltl_harness = ["ui/*", "examples/*.yaml"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

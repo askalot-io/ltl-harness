@@ -1,7 +1,7 @@
 """Guardrail dashboard server (Python port).
 
-Serves the SAME ui/ and runs/ as the JS harness — both engines' flight
-records appear side by side. Stdlib only.
+Serves the bundled ui/ and the same runs/ as the JS harness — both engines'
+flight records appear side by side. Stdlib only.
 
     GET /              the UI
     GET /api/runs      run list (newest first)
@@ -17,17 +17,12 @@ from __future__ import annotations
 import json
 import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
 from urllib.parse import unquote
 
 from .engine.lint import lint_rulebook
 from .engine.rulebook import load_rulebook
+from .paths import RULEBOOK_PATH, RUNS_DIR, UI_DIR
 from .recorder import list_runs, read_run
-
-ROOT = Path(__file__).resolve().parents[2]
-UI_DIR = ROOT / "ui"
-RUNS_DIR = ROOT / "runs"
-RULEBOOK_PATH = ROOT / "rules" / "refund.rules.yaml"
 
 MIME = {".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml"}
 
