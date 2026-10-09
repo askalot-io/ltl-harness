@@ -39,7 +39,7 @@ code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monosp
   flex-shrink: 0;
 }
 .brand { display: flex; align-items: baseline; gap: 10px; }
-.brand-mark { font-size: 20px; }
+.brand-mark { height: 24px; width: 24px; }
 .brand-name { font-weight: 700; font-size: 16px; }
 .brand-sub { color: var(--muted); font-size: 12px; font-style: italic; }
 .pill {

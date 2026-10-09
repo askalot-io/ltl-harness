@@ -39,18 +39,18 @@ from pylogics.syntax.base import Formula
 from pylogics.syntax.ltl import Atomic
 from pylogics.utils.to_string import to_string
 
-ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_RULEBOOK = ROOT / "rules" / "refund.rules.yaml"
+from .paths import EXAMPLE_RULEBOOK, IN_CHECKOUT, RULEBOOK_PATH, read_dotenv
 
 PATTERN_CATALOG = ", ".join(t.value for t in TemplateEnum)
 
 
 def _load_env() -> None:
+    dotenv = read_dotenv()
+    if dotenv is None:
+        return
     os.environ.pop("ANTHROPIC_API_KEY", None)
-    for line in (ROOT / ".env").read_text().splitlines():
-        m = re.match(r"^([A-Z_][A-Z0-9_]*)=(.*)$", line)
-        if m:
-            os.environ.setdefault(m.group(1), m.group(2).strip())
+    for key, value in dotenv.items():
+        os.environ.setdefault(key, value)
 
 
 async def _ask_claude(system_prompt: str, prompt: str) -> str:
@@ -146,7 +146,7 @@ def append_rule(rulebook_path: Path, rule_id: str, description: str, formula: st
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("sentence", help="the policy sentence, in plain English")
-    parser.add_argument("--rulebook", default=str(DEFAULT_RULEBOOK))
+    parser.add_argument("--rulebook", default=str(RULEBOOK_PATH))
     parser.add_argument("--id", required=True, help="rule id to append as")
     parser.add_argument("--posture", default="recorder", choices=["recorder", "tripwire", "seatbelt"])
     parser.add_argument("--yes", action="store_true", help="skip the interactive confirmation")
@@ -182,6 +182,10 @@ def main() -> int:
         print("\n(dry run — rulebook untouched)")
         return 0
 
+    if not IN_CHECKOUT and rulebook_path.resolve() == EXAMPLE_RULEBOOK.resolve():
+        print("✗ that is the bundled example rulebook — pass --rulebook <your.rules.yaml>")
+        return 2
+
     if not args.yes:
         answer = input("Same thing? Append to rulebook and re-lint? [y/N] ").strip().lower()
         if answer != "y":
@@ -192,7 +196,6 @@ def main() -> int:
     try:
         lint = subprocess.run(
             [sys.executable, "-m", "ltl_harness.lint_cli", str(rulebook_path.resolve())],
-            cwd=str(ROOT / "py"),
             capture_output=True,
             text=True,
         )
