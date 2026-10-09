@@ -1,11 +1,9 @@
 """Design time: natural language -> DECLARE pattern -> LTLf rule, with the
 round-trip check that keeps the translation honest.
 
-Runs in the SEPARATE .venv-nl environment (nl2ltl's pylogics needs modern
-lark; the runtime engine's ltlf2dfa needs lark-parser 0.x — they cannot share
-a venv):
+Needs the `nl` extra (nl2ltl), which the runtime engine never imports:
 
-    .venv-nl/bin/python -m ltl_harness.nl2rules "Every refund must eventually be audited." \
+    .venv/bin/python -m ltl_harness.nl2rules "Every refund must eventually be audited." \
         --id audit-eventually --posture recorder [--yes] [--dry-run]
 
 Pipeline (the role reversal from the article):
@@ -16,7 +14,7 @@ Pipeline (the role reversal from the article):
   3. Claude paraphrases the FORMULA back to English without seeing the
      original sentence — you compare the two (round trip);
   4. on approval the rule is appended to the rulebook as a raw-formula rule
-     and the runtime venv's linter re-verifies the whole rulebook (the
+     and the runtime linter re-verifies the whole rulebook (the
      deterministic component). If the lint fails, the append is reverted.
 """
 
@@ -42,7 +40,6 @@ from pylogics.syntax.ltl import Atomic
 from pylogics.utils.to_string import to_string
 
 ROOT = Path(__file__).resolve().parents[2]
-RUNTIME_PYTHON = ROOT / "py" / ".venv" / "bin" / "python"
 DEFAULT_RULEBOOK = ROOT / "rules" / "refund.rules.yaml"
 
 PATTERN_CATALOG = ", ".join(t.value for t in TemplateEnum)
@@ -110,6 +107,12 @@ class ClaudeEngine(Engine):
         return {pattern_cls(*(Atomic(s) for s in symbols)): 1.0}
 
 
+def to_ltlf2dfa_syntax(formula_str: str) -> str:
+    """pylogics prints strong next as `X[!]` and weak next as `X`; ltlf2dfa
+    (the runtime parser) spells them `X` and `WX`."""
+    return re.sub(r"X(\[!\])?(?=\()", lambda m: "X" if m.group(1) else "WX", formula_str)
+
+
 def paraphrase(formula_str: str) -> str:
     return asyncio.run(
         _ask_claude(
@@ -163,7 +166,7 @@ def main() -> int:
         print("✗ no pattern produced")
         return 1
     pattern = max(results, key=results.get)
-    formula_str = to_string(pattern.to_ltlf())
+    formula_str = to_ltlf2dfa_syntax(to_string(pattern.to_ltlf()))
 
     print(f"DECLARE pattern:  {pattern}")
     print(f"LTLf formula:     {formula_str}")
@@ -186,14 +189,18 @@ def main() -> int:
             return 1
 
     original = append_rule(rulebook_path, args.id, args.sentence, formula_str, args.posture)
-    lint = subprocess.run(
-        [str(RUNTIME_PYTHON), "-m", "ltl_harness.lint_cli", str(rulebook_path)],
-        cwd=str(ROOT / "py"),
-        capture_output=True,
-        text=True,
-    )
-    print("\nguardrails on the guardrails (runtime venv lint):")
-    print(lint.stdout.rstrip())
+    try:
+        lint = subprocess.run(
+            [sys.executable, "-m", "ltl_harness.lint_cli", str(rulebook_path.resolve())],
+            cwd=str(ROOT / "py"),
+            capture_output=True,
+            text=True,
+        )
+    except BaseException:
+        rulebook_path.write_text(original)  # never leave an unverified rule behind
+        raise
+    print("\nguardrails on the guardrails (runtime lint):")
+    print((lint.stdout + lint.stderr).rstrip())
     if lint.returncode != 0:
         rulebook_path.write_text(original)
         print(f"\n✗ lint failed — appended rule '{args.id}' was reverted.")
